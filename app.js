@@ -17,6 +17,16 @@ function divide(x, y) {
 function clearInput() { 
 // if CE > then clear the current input
 // if C > then clear the final val
+    const buttonArray = document.getElementsByClassName("button clearInput");
+
+    for (let i = 0; i < buttonArray.length; i++) {
+        buttonArray[i].addEventListener("click", function(event) {
+            currNum = []
+            currInput = []
+            evaluateFlag = 0
+        });
+    };
+
 };
 
 function operatorInput() { 
@@ -28,22 +38,34 @@ function operatorInput() {
         operatorArray.push(buttonArray[i].innerHTML)
 
         buttonArray[i].addEventListener("click", function(event) {
-            if (currNum.length > 0 && currInput.length < 3) {
-                currInput = [];
+            if (evaluateFlag === 1) {
+                currInput.pop();
+                currInput.push(buttonArray[i].innerHTML);
+                currInput.push(parseInt(currNum.join("")));
+                evaluate();
+            } else if (currNum.length > 0 && currInput.length === 2) {
+                // handle a situation where there you have something like [1, +] and a current number
+                evaluate();
+            } else if (currNum.length > 0 && currInput.length < 3) {
                 currInput.push(parseInt(currNum.join("")));
                 currNum = [];
                 currInput.push(buttonArray[i].innerHTML);
-            } else if (operatorArray.includes(currInput.at(-1))) {
-                //console.log('2')
+            } else if (currNum.length === 1 && currInput.length === 1) {
+                // do something where if we have the prev arithmetic num
+                // and then we' want to arithmetic on that prev num 
+                currNum = [];
+                currInput.push(buttonArray[i].innerHTML);
+            } else if (operatorArray.includes(currInput.at(-1))) { 
+                // this is to replace operator (if the last button clicked was an operator)
                 currInput.pop();
                 currInput.push(buttonArray[i].innerHTML);
             } else if (currInput.length === 0) {
-                //console.log('1')
+                // if there's no number already, do nothing
                 return;
             } else {
                 return;
             }
-            // handle a situation where there you have something like [1, +] and a currNUM
+            
         });
     };
 };
@@ -54,7 +76,14 @@ function numInput() {
 
     for (let i = 0; i < buttonArray.length; i++) {
         buttonArray[i].addEventListener("click", function(event) {
-            if (currNum.length < 10) {
+            if (evaluateFlag === 1) {
+                // numFlag = 1;
+                // currNum = [];
+                currNum.push(buttonArray[i].innerHTML)
+            } else if (currNum.length < 9) {
+                if (currNum[0] == "0") {
+                    currNum.shift();
+                }
                 currNum.push(buttonArray[i].innerHTML)
             }
         });
@@ -65,20 +94,40 @@ function numInput() {
 function operatorSelector() {
     
     let finalVal = 0;
-
+    
     if (currInput.includes('÷')) {
-        finalVal = divide(currInput[0], currInput[2])
+        const nums = currInput.filter(Number.isFinite)
+        console.log(nums)
+        finalVal = [divide(nums[0], nums[1]), '÷']
     } else if (currInput.includes('×')) {
-        finalVal = multiply(currInput[0], currInput[2])
+        const nums = currInput.filter(Number.isFinite)
+        finalVal = [multiply(nums[0], nums[1]), '×']
     } else if (currInput.includes('+')) {
-        finalVal = add(currInput[0], currInput[2])
+        const nums = currInput.filter(Number.isFinite)
+        finalVal = [add(nums[0], nums[1]), '+']
     } else if (currInput.includes('-')) {
-        finalVal = subtract(currInput[0], currInput[2])
+        const nums = currInput.filter(Number.isFinite)
+        finalVal = [subtract(nums[0], nums[1]), '-']
     }
-
+    
     return finalVal
 
 };
+
+function evaluate () {
+
+    evaluateFlag = 1;
+    numFlag = 0;
+
+    if (isNaN(parseInt(currNum.join("")))) {
+        return;
+    } else {
+        currInput.push(Number(currNum.join("")))
+        const finalNum = operatorSelector()
+        currInput = finalNum
+        currNum = finalNum
+    };
+}
 
 function evaluator() {
     
@@ -86,32 +135,52 @@ function evaluator() {
 
     for (let i = 0; i < buttonArray.length; i++) {
         buttonArray[i].addEventListener("click", function(event) {
-            
+            evaluate();
+        });
+    };
+
+};
+
+function displayVals() {
+    const buttonArray = document.getElementsByClassName("button");
+
+    for (let i = 0; i < buttonArray.length; i++) {
+        buttonArray[i].addEventListener("click", function(event) {
+
             if (isNaN(parseInt(currNum.join("")))) {
-                return;
+                displayNum = "";
             } else {
-                currInput.push(parseInt(currNum.join("")))
-                currInput = [operatorSelector()]
-                currNum = [operatorSelector()]
-            }
+                displayNum = parseInt(currNum.join(""));
+            };
+            
+            document.getElementById("prevSelection").innerHTML = currInput.join("");
+            document.getElementById("currSelection").innerHTML = displayNum;
 
         });
     };
 
 };
 
+let finalDisplayVal; // whenever an operation is run > this val should be displayed
+let evaluateFlag = 0;
+let numFlag = 0; // use this to indicate when to start treating 'currNum' normally - maybe not needed
 let currInput = []; 
-let currNum = [];
+let currNum = []; // should swap what is displayed to the user based on if it has been operated on OR if you're about to do an operation
 
 const buttonArray = document.getElementsByClassName("button test");
 
 for (let i = 0; i < buttonArray.length; i++) {
     buttonArray[i].addEventListener("click", function(event) {
+        //console.log(currInput.length)
+        console.log(numFlag)
+        console.log(evaluateFlag)
         console.log(currInput)
         console.log("currentNum:" + currNum)
     });
 };
 
+clearInput();
 operatorInput();
 numInput();
 evaluator();
+displayVals();
