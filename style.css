@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-
 body {
     font-family: Roboto, 'Helvetica Neue', sans-serif;
     min-height: 100vh;
@@ -54,13 +53,25 @@ body {
 #currEntry {
     display: flex;
     flex-direction: column;
-    margin: 15px 0px 15px 0px;
-    gap: 10px;
+    color: #2B3B36;
+    margin: 10px 0px 10px 0px;
+    width: 250px;
+    height: 70px;
+}
+
+#prevSelection {
+    height: 24px;
+    padding: 4px;
+}
+
+#currSelection {
+    height: 50px;
+    font-size: 36px;
 }
 
 .display { 
     display: flex;
-    justify-content: right;
+    justify-content: right;   
 }
 
 .ctrlRow {
@@ -69,6 +80,34 @@ body {
     gap: 3px; 
 }
 
+button:focus {
+    outline: 0;
+}
+
+.numInput:hover {
+    background-color: #678E82;
+}
+
+.numInput:active {
+    background-color: #4D6A61;
+}
+
+
+.clearInput:hover {
+    background-color: #C4D4CF;
+}
+
+.clearInput:active {
+    background-color: #ACC3BC;
+}
+
+.operatorInput:hover, .evalInput:hover {
+    background-color: #F5AE3D;
+}
+
+.operatorInput:active, .evalInput:active {
+    background-color: #F4A62A;
+}
 
 button {
     display: flex;
